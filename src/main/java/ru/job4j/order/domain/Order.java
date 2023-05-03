@@ -35,4 +35,6 @@ public class Order {
     @ManyToOne()
     @JoinColumn(name = "STATUS_ID", foreignKey = @ForeignKey(name = "FK_STATUS_ID"))
     private Status status;
+    @Column(name = "DISH_ID")
+    private int dishId;
 }

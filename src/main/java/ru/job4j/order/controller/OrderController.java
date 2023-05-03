@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.order.domain.Order;
 import ru.job4j.order.domain.Status;
+import ru.job4j.order.domain.dto.OrderDTO;
 import ru.job4j.order.service.SimpleOrderService;
 
 /**
@@ -25,8 +26,14 @@ import ru.job4j.order.service.SimpleOrderService;
 public class OrderController {
     private final SimpleOrderService orders;
 
+    /**
+     * Метод поиска заказа по ID возвращает ResponseEntity<OrderDto>
+     *
+     * @param id int ID
+     * @return ResponseEntity<OrderDTO>
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable int id) {
+    public ResponseEntity<OrderDTO> getOrderById(@PathVariable int id) {
         var order = orders.findOrderById(id);
         return new ResponseEntity<>(
                 order.orElseThrow(

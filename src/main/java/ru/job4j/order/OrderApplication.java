@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 @SpringBootApplication
 @Slf4j
 public class OrderApplication {
-    private static final String URL_JOB4J_ORDER = "http://localhost:8080/orders";
+    private static final String URL_JOB4J_ORDER = "http://localhost:8082/orders";
 
     /**
      * Создание SpringLiquibase

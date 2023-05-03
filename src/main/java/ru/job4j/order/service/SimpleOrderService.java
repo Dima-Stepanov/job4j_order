@@ -3,8 +3,12 @@ package ru.job4j.order.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.job4j.order.domain.Dish;
 import ru.job4j.order.domain.Order;
 import ru.job4j.order.domain.Status;
+import ru.job4j.order.domain.dto.OrderDTO;
+import ru.job4j.order.mapper.OrderDTOMapper;
+import ru.job4j.order.repository.DishRepository;
 import ru.job4j.order.repository.OrderRepository;
 
 import java.util.Optional;
@@ -24,6 +28,8 @@ import java.util.Optional;
 @Slf4j
 public class SimpleOrderService implements OrderService {
     private final OrderRepository orderRepository;
+    private final DishRepository dishRepository;
+    private final OrderDTOMapper orderDTOMapper;
 
     @Override
     public Optional<Order> create(Order order) {
@@ -37,8 +43,17 @@ public class SimpleOrderService implements OrderService {
     }
 
     @Override
-    public Optional<Order> findOrderById(int orderId) {
-        return orderRepository.findById(orderId);
+    public Optional<OrderDTO> findOrderById(int orderId) {
+        Optional<Order> order = orderRepository.findById(orderId);
+        if (order.isEmpty()) {
+            return Optional.empty();
+        }
+        Optional<Dish> dish = dishRepository.findById(order.get().getDishId());
+        if (dish.isEmpty()) {
+            dish = Optional.of(new Dish(-1, "dishEmpty", ""));
+        }
+        OrderDTO orderDTO = orderDTOMapper.getOrderDtoByOrderAndDish(order.get(), dish.get());
+        return Optional.of(orderDTO);
     }
 
     @Override
@@ -65,6 +80,6 @@ public class SimpleOrderService implements OrderService {
 
     @Override
     public Optional<Status> getStatusByOrderId(int orderId) {
-        return findOrderById(orderId).map(Order::getStatus);
+        return orderRepository.findById(orderId).map(Order::getStatus);
     }
 }

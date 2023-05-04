@@ -17,9 +17,9 @@ import java.util.Optional;
  * @since 27.04.2023
  */
 public interface OrderService {
-    Optional<Order> create(Order order);
+    Optional<OrderDTO> create(OrderDTO orderDTO);
     Optional<OrderDTO> findOrderById(int orderId);
-    boolean update(Order order);
+    boolean update(OrderDTO orderDTO);
     boolean delete(int orderId);
     Optional<Status> getStatusByOrderId(int orderId);
 }

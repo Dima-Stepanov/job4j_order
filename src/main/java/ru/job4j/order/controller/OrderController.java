@@ -21,7 +21,7 @@ import ru.job4j.order.service.SimpleOrderService;
  * @since 27.04.2023
  */
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/order")
 @AllArgsConstructor
 public class OrderController {
     private final SimpleOrderService orders;
@@ -61,8 +61,8 @@ public class OrderController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Order> postCreate(@RequestBody Order order) {
-        var orderSave = orders.create(order);
+    public ResponseEntity<OrderDTO> postCreate(@RequestBody OrderDTO orderDTO) {
+        var orderSave = orders.create(orderDTO);
         return new ResponseEntity<>(
                 orderSave.orElseThrow(
                         () -> new ResponseStatusException(
@@ -75,8 +75,8 @@ public class OrderController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Order order) {
-        var orderUpdate = orders.update(order);
+    public ResponseEntity<Void> update(@RequestBody OrderDTO orderDTO) {
+        var orderUpdate = orders.update(orderDTO);
         return orderUpdate ? ResponseEntity.ok().build() : ResponseEntity.internalServerError().build();
     }
 

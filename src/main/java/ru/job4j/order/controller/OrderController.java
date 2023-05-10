@@ -21,7 +21,7 @@ import ru.job4j.order.service.SimpleOrderService;
  * @since 27.04.2023
  */
 @RestController
-@RequestMapping("/orders")
+@RequestMapping("/order")
 @AllArgsConstructor
 public class OrderController {
     private final KafkaOrderService kafkaOrderService;
@@ -82,8 +82,8 @@ public class OrderController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Order order) {
-        var orderUpdate = orders.update(order);
+    public ResponseEntity<Void> update(@RequestBody OrderDTO orderDTO) {
+        var orderUpdate = orders.update(orderDTO);
         return orderUpdate ? ResponseEntity.ok().build() : ResponseEntity.internalServerError().build();
     }
 

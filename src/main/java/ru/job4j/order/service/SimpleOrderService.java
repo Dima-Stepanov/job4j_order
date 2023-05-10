@@ -7,7 +7,7 @@ import ru.job4j.order.domain.Dish;
 import ru.job4j.order.domain.Order;
 import ru.job4j.order.domain.Status;
 import ru.job4j.order.domain.dto.OrderDTO;
-import ru.job4j.order.mapper.OrderDTOMapper;
+import ru.job4j.order.mapper.OrderMapper;
 import ru.job4j.order.repository.DishRepository;
 import ru.job4j.order.repository.OrderRepository;
 
@@ -29,16 +29,17 @@ import java.util.Optional;
 public class SimpleOrderService implements OrderService {
     private final OrderRepository orderRepository;
     private final DishRepository dishRepository;
-    private final OrderDTOMapper orderDTOMapper;
+    private final OrderMapper orderMapper;
 
     @Override
-    public Optional<Order> create(Order order) {
+    public Optional<OrderDTO> create(OrderDTO orderDTO) {
         try {
+            var order = orderMapper.getOrderByOrderDTO(orderDTO);
             orderRepository.save(order);
             orderDTO.setId(order.getId());
             return Optional.of(orderDTO);
         } catch (Exception e) {
-            log.error("Fail create order: {}, error: {}", order, e.getMessage());
+            log.error("Fail create order: {}, error: {}", orderDTO, e);
             return Optional.empty();
         }
     }
@@ -53,12 +54,13 @@ public class SimpleOrderService implements OrderService {
         if (dish.isEmpty()) {
             dish = Optional.of(new Dish(-1, "dishEmpty", ""));
         }
-        OrderDTO orderDTO = orderDTOMapper.getOrderDtoByOrderAndDish(order.get(), dish.get());
+        OrderDTO orderDTO = orderMapper.getOrderDtoByOrderAndDish(order.get(), dish.get());
         return Optional.of(orderDTO);
     }
 
     @Override
-    public boolean update(Order order) {
+    public boolean update(OrderDTO orderDTO) {
+        var order = orderMapper.getOrderByOrderDTO(orderDTO);
         try {
             orderRepository.save(order);
             return true;

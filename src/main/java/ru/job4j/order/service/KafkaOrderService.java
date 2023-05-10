@@ -1,9 +1,9 @@
 package ru.job4j.order.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import ru.job4j.order.domain.dto.OrderDTO;
@@ -21,12 +21,12 @@ import ru.job4j.order.domain.dto.OrderDTO;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class KafkaOrderService implements KafkaService<Integer, OrderDTO> {
-    private final KafkaTemplate<Integer, OrderDTO> kafkaTemplate;
-
+public class KafkaOrderService implements KafkaService<String, String, OrderDTO> {
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final ObjectMapper objectMapper;
 
     @Override
-    public void sendMessage(String topic, Integer key, OrderDTO type) {
+    public void sendMessage(String topic, String key, OrderDTO type) {
         var future = kafkaTemplate.send(topic, key, type);
         future.addCallback(o -> log.debug("SUCCESS message, key: {}, type: {}", key, type),
                 o -> log.error("FAILURE message, key: {}, type: {}", key, type));
@@ -34,13 +34,16 @@ public class KafkaOrderService implements KafkaService<Integer, OrderDTO> {
     }
 
     @Override
-    public OrderDTO receive(ConsumerRecord<Integer, OrderDTO> record) {
-        var partition = record.partition();
-        var keyMessage = record.key();
-        var value = record.value();
-        log.debug("Partition: {}", partition);
-        log.debug("Key: {}", keyMessage);
-        log.debug("Value: {}", value);
-        return value;
+    public OrderDTO receive(ConsumerRecord<String, String> record) {
+        log.debug("Partition: {}", record.partition());
+        log.debug("Key: {}", record.key());
+        log.debug("Value: {}", record.value());
+        OrderDTO orderDTO;
+        try {
+            orderDTO = objectMapper.readValue(record.value(), OrderDTO.class);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return orderDTO;
     }
 }

@@ -12,7 +12,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
  * @author Dmitry Stepanov, user Dmitry
  * @since 05.05.2023
  */
-public interface KafkaService<K, T> {
+public interface KafkaService<K, V, T> {
     /**
      * Отправить сообщение
      *
@@ -27,5 +27,5 @@ public interface KafkaService<K, T> {
      *
      * @param record Тело сообщения
      */
-    public T receive(ConsumerRecord<K, T> record);
+    public T receive(ConsumerRecord<K, V> record);
 }

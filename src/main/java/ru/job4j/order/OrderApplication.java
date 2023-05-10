@@ -41,5 +41,4 @@ public class OrderApplication {
         SpringApplication.run(OrderApplication.class, args);
         log.info("GO TO {}", URL_JOB4J_ORDER);
     }
-
 }

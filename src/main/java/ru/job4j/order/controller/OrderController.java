@@ -15,6 +15,7 @@ import ru.job4j.order.service.SimpleOrderService;
  * 3.5. Микросервисы
  * Job4j Hungry Wolf
  * Job4j ORDER
+ * 5. Повествование основанное на хореографии [#458498]
  * OrderController REST API модели ORDER
  *
  * @author Dmitry Stepanov, user Dmitry
@@ -25,6 +26,7 @@ import ru.job4j.order.service.SimpleOrderService;
 @AllArgsConstructor
 public class OrderController {
     private final KafkaOrderService kafkaOrderService;
+    private static final String TOPIC_PREORDER = "job4j_preorder";
     private static final String TOPIC_ORDERS = "job4j_orders";
     private static final String TOPIC_NOTIFICATION = "job4j_notifications";
     private final SimpleOrderService orders;
@@ -67,8 +69,15 @@ public class OrderController {
     public ResponseEntity<OrderDTO> postCreate(@RequestBody OrderDTO orderDTO) {
         var orderSave = orders.create(orderDTO);
         if (orderSave.isPresent()) {
-            kafkaOrderService.sendMessage(TOPIC_ORDERS, String.valueOf(orderSave.get().getId()), orderSave.get());
-            kafkaOrderService.sendMessage(TOPIC_NOTIFICATION, String.valueOf(orderSave.get().getId()), orderSave.get());
+            kafkaOrderService.sendMessage(TOPIC_ORDERS,
+                    String.valueOf(orderSave.get().getId()),
+                    orderSave.get());
+            kafkaOrderService.sendMessage(TOPIC_NOTIFICATION,
+                    String.valueOf(orderSave.get().getId()),
+                    orderSave.get());
+            kafkaOrderService.sendMessage(TOPIC_PREORDER,
+                    String.valueOf(orderSave.get().getId()),
+                    orderSave.get());
         }
         return new ResponseEntity<>(
                 orderSave.orElseThrow(

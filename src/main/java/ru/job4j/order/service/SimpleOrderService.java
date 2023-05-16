@@ -85,4 +85,9 @@ public class SimpleOrderService implements OrderService {
     public Optional<Status> getStatusByOrderId(int orderId) {
         return orderRepository.findById(orderId).map(Order::getStatus);
     }
+
+    @Override
+    public boolean setStatusByOrderId(int orderId, int statusId) {
+        return orderRepository.setStatusByOrderId(orderId, statusId) > 0;
+    }
 }

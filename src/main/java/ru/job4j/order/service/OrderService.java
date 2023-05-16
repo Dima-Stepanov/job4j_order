@@ -1,6 +1,5 @@
 package ru.job4j.order.service;
 
-import ru.job4j.order.domain.Order;
 import ru.job4j.order.domain.Status;
 import ru.job4j.order.domain.dto.OrderDTO;
 
@@ -22,4 +21,5 @@ public interface OrderService {
     boolean update(OrderDTO orderDTO);
     boolean delete(int orderId);
     Optional<Status> getStatusByOrderId(int orderId);
+    boolean setStatusByOrderId(int orderId, int statusId);
 }

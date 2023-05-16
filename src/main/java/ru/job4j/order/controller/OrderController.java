@@ -96,6 +96,26 @@ public class OrderController {
         return orderUpdate ? ResponseEntity.ok().build() : ResponseEntity.internalServerError().build();
     }
 
+    /**
+     * Метод обновляет статус заказа через запрос Patch
+     *
+     * @param id       Order ID
+     * @param statusId Status ID from set
+     * @return void
+     */
+    @PutMapping("/{id}/status")
+    public ResponseEntity<Void> patchUpdate(@PathVariable int id, @RequestBody int statusId) {
+        var result = orders.setStatusByOrderId(id, statusId);
+        if (result) {
+            var order = orders.findOrderById(id);
+            order.ifPresent((o) -> kafkaOrderService.sendMessage(TOPIC_NOTIFICATION,
+                    String.valueOf(o.getId()),
+                    o));
+        }
+        return result ? ResponseEntity.ok().build() : ResponseEntity.notFound().build();
+
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable int id) {
         var orderDelete = orders.delete(id);
